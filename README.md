@@ -38,7 +38,9 @@
 ## 🌟 Highlights
 🧬 **Analyzing Single-Cell Methylation Data** | 🌐 **Whole-Genome-Scale Context Modeling** | 🔬 **Single-CpG Resolution** | ⚡ **Mamba-Powered Speed**
 
-> 🚧 **Data Notice:** We are currently uploading the **pretraining data**. The upload is expected to be completed by **October 31, 2026**. Please stay tuned! [2026/10/27]
+<p align="center" style="background-color: #000000; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
+  🚧 <strong>DATA NOTICE:</strong> We are currently uploading the <strong>pretraining data</strong>. The upload is expected to be completed by <strong>October 31, 2026</strong>. Please stay tuned! [2026/10/27]
+</p>
 
 ---
 
