@@ -16,6 +16,9 @@
       Read our new version manuscript on bioRxiv
     </a>
   </p>
+  <p style="max-width: 720px; margin: 0.5rem auto 0; font-size: 0.95rem; color: #b45309; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 0.6rem 1rem;">
+    🚧 <strong>Data Notice:</strong> We are currently uploading the <strong>pretraining data</strong>. The upload is expected to be completed by <strong>October 31, 2026</strong>. Please stay tuned! [2026/10/27]
+  </p>
   <div align="center" style="margin: 1.5rem 0;">
     <div style="display: flex; gap: 1.25rem; justify-content: center;">
       <a href="#-key-features" style="text-decoration: none; color: #2d3748; font-weight: 500;">Key Features</a>
