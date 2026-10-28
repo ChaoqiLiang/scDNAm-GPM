@@ -1,0 +1,44 @@
+{
+  "root_path": "",
+  "pretraining_csv_file": "data/pretraining_data_csv/HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one_dim_ge_128.csv",
+  "use_truncation": true,
+  "use_sample": false,
+  "train_use_length_scale": true,
+  "train_bias_power": 0.4,
+  "random": true,
+  "chrs_random": false,
+  "min_length": 500000,
+  "max_length": 2000000,
+  "selective_chrs": [-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+  "use_dataug": false,
+  "training_args": {
+    "ddp_backend": "nccl",
+    "max_steps": 500000,
+    "overwrite_output_dir": true,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "eval_strategy": "no",
+    "save_steps": 1000,
+    "logging_steps": 50,
+    "bf16": true,
+
+    "dataloader_num_workers": 8,
+    "dataloader_persistent_workers": true,
+    "dataloader_pin_memory": true,
+
+    "report_to": "tensorboard",
+    "ddp_find_unused_parameters": true,
+
+    "learning_rate": 0.0004,
+    "lr_scheduler_type": "linear",
+    "warmup_steps": 1000,
+
+    "save_safetensors": false,
+    "ignore_data_skip": false,
+
+    "max_grad_norm": 10.0,
+    "deepspeed": "pretraining/config/pretraining/deepspeed_config_bf16.json",
+    "output_dir": "output_dir/pretraining/pretraining_checkpoints/6mer_8mamba2s_64dstate_4attns_model_128dmodel",
+    "logging_dir": "output_dir/pretraining/pretraining_checkpoints/6mer_8mamba2s_64dstate_4attns_model_128dmodel"
+  }
+}

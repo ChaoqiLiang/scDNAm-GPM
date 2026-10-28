@@ -1,0 +1,34 @@
+{
+    "tokenizer_name": "pretraining/glm_src/tokenizers/scdnam_10mer",
+    "model_config": {
+        "K_mer": "10mer",
+        "d_model": 512,
+        "n_layer": 16,
+        "vocab_size": 131080,
+        "ssm_cfg": {
+            "layer": "Mamba2",
+            "d_state": 256,
+            "d_conv": 4,
+            "expand": 2,
+            "headdim": 256,
+            "dt_min": 0.001,
+            "dt_max": 0.1,
+            "dt_init_floor": 0.0001,
+            "conv_bias": true,
+            "bias": false,
+            "use_mem_eff_path": true
+        },
+        "initializer_cfg": {
+            "initializer_range": 0.02,
+            "rescale_prenorm_residual": true
+        },
+        "rms_norm": true,
+        "residual_in_fp32": false,
+        "fused_add_norm": true,
+        "pad_vocab_size_multiple": 8,
+        "d_intermediate": 0,
+        "attn_layer_idx": [],
+        "attn_cfg": {},
+        "tie_embeddings": true
+    }
+}
