@@ -360,6 +360,49 @@ Directory structure example:
         └── ...
 ```
 
+### 6. Pretraining from Scratch
+
+The pretraining code lives in [`pretraining/`](pretraining/README.md) as a **standalone, self-contained stack** (`pretraining/glm_src/`) — it neither imports nor modifies anything under `src/`, so it cannot interfere with the fine-tuning / inference pipeline.
+
+#### What it does
+
+Pretrains the Mamba backbone as a methylation language model on scWGBS data: causal next-token prediction over the dual methylated/unmethylated token streams, weighted by per-CpG methylation ratios (see `scDNAmGLMLMHeadModelwithLoss` in `pretraining/glm_src/model/scdnam_glm.py`).
+
+#### Data
+
+Pretraining consumes the same tokenized `.npz` cells produced by the `data_process` pipeline (Section 5), plus a CSV manifest listing the per-cell files:
+
+```
+file_name,dimension,error
+/abs/or/rel/path/to/cell.allc.npz,2165450,
+```
+
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain); the tokenized data is being uploaded to the same Google Drive folder as the fine-tuning data.
+
+#### Submit the job with:
+
+```bash
+# from the repository root — manuscript default configs (6-mer, 8 Mamba layers, fp16)
+bash pretraining/script/pretraining.sh
+
+# or launch directly
+torchrun --nnodes=1 --nproc_per_node=8 --master_port=16866 \
+  pretraining/pretraining.py \
+    --model_config_path pretraining/config/model/6mer_8mambalayers_model_config.json \
+    --training_args_path pretraining/config/pretraining/training_args_fp16.json
+```
+
+The launcher auto-detects the GPU count; `NPROC_PER_NODE`, `MODEL_CONFIG`, `TRAINING_ARGS`, `MASTER_PORT` and `TRITON_CACHE_BASE` can be overridden via environment variables, and the entry point also understands SLURM variables (`SLURM_PROCID`, ...) for `srun`/`sbatch` submission.
+
+#### Key configuration:
+
+- **`pretraining/config/model/6mer_8mambalayers_model_config.json`** — manuscript model: 6-mer tokenizer, 8 Mamba layers, d_model 128, d_state 16
+- **`pretraining/config/pretraining/training_args_fp16.json`** — fp16, DeepSpeed, 600k steps, lr 1e-4, batch size 1/GPU with gradient accumulation 8
+- **`pretraining/config/pretraining/deepspeed_config_fp16.json`** — ZeRO stage 0 (DDP-style)
+- Alternatives kept for reference: a larger 10-mer / 16-layer Mamba2 model config and a bf16 training variant (see [`pretraining/README.md`](pretraining/README.md))
+
+Checkpoints and logs are written to the `output_dir` / `logging_dir` from the training args (gitignored); resume by setting `checkpoint_dir` in the training-args JSON. See [`pretraining/README.md`](pretraining/README.md) for the full documentation.
+
 ## ❓ FAQ
 
 1. **Why do I see `[SKIP] ... already exists` in the output?**  
