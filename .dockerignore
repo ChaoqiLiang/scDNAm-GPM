@@ -1,0 +1,14 @@
+# Keep the image lean: exclude data, outputs and local wheels
+.git
+.github
+pic
+docker/wheels
+output_dir
+data_and_model
+tutorials/human_body
+tutorials/human_esc
+tutorials/tumor_detection
+tutorials/CpGs_around_MALAT1
+**/__pycache__
+**/.ipynb_checkpoints
+*.pyc

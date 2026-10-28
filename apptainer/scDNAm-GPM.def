@@ -1,0 +1,26 @@
+Bootstrap: docker
+From: ghcr.io/chaoqiliang/scdnam-gpm:latest
+
+# Apptainer/Singularity image for scDNAm-GPM (for HPC clusters without Docker).
+# The image is derived directly from the published Docker image, so the two are
+# always in sync. Build (no root required):
+#   apptainer build scDNAm-GPM.sif scDNAm-GPM.def
+# or, without this definition file at all:
+#   apptainer build scDNAm-GPM.sif docker://ghcr.io/chaoqiliang/scdnam-gpm:latest
+
+%post
+    # The base Docker image already contains the full environment and the
+    # repository code under /workspace/scDNAm-GPM; nothing extra to install.
+    echo "scDNAm-GPM apptainer image ready"
+
+%environment
+    export CUDA_HOME=/usr/local/cuda
+    export PATH=/usr/local/cuda/bin:$PATH
+    export PYTHONPATH=/workspace/scDNAm-GPM
+
+%runscript
+    cd /workspace/scDNAm-GPM
+    exec "$@"
+
+%test
+    python3 -c "import torch, mamba_ssm, causal_conv1d, flash_attn; print('env OK')"

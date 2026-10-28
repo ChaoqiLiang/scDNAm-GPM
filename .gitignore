@@ -71,3 +71,5 @@ dist/
 
 # Ignore .out files
 *.out
+# Local wheel cache for docker build (release assets instead, see docker/README.md)
+docker/wheels/

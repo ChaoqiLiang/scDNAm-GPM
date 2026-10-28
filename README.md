@@ -125,6 +125,28 @@ pip install causal_conv1d-1.5.0.post8...cuXXX-cp3XX-...whl
 pip install mamba_ssm-2.2.4...cuXXX-cp3XX-...whl
 ```
 
+### 2b. Environment via Docker / Apptainer (recommended)
+
+Instead of installing dependencies manually, you can use the prebuilt container
+image that reproduces the exact GPU environment used in the manuscript
+(Python 3.10, PyTorch 2.7.0+cu128, mamba-ssm 2.3.0, causal-conv1d 1.6.0,
+flash-attn 2.8.3, DeepSpeed 0.18.0, and all pinned packages):
+
+```bash
+# Docker
+docker pull ghcr.io/chaoqiliang/scdnam-gpm:latest
+docker run --gpus all -it ghcr.io/chaoqiliang/scdnam-gpm:latest bash
+
+# Apptainer / Singularity (HPC clusters, no root needed)
+apptainer build scDNAm-GPM.sif docker://ghcr.io/chaoqiliang/scdnam-gpm:latest
+apptainer shell --nv scDNAm-GPM.sif
+```
+
+The image is rebuilt automatically on every change to `docker/` via GitHub
+Actions. For details (how to bind data, run training scripts, or build the
+image yourself) see [`docker/README.md`](docker/README.md) and the Apptainer
+definition file [`apptainer/scDNAm-GPM.def`](apptainer/scDNAm-GPM.def).
+
 ### 3. Tutorials
 
 We provide example tutorials in the `tutorials` folder to help you get started:
