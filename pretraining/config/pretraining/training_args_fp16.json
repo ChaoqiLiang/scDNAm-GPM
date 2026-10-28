@@ -1,0 +1,33 @@
+{
+  "root_path": "",
+  "pretraining_csv_file": "data/pretraining_data_csv/HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv",
+  "use_truncation": true,
+  "use_sample": false,
+  "random": true,
+  "max_length": 2000000,
+  "use_dataug": false,
+  "training_args": {
+      "ddp_backend": "nccl",
+      "max_steps": 600000,
+      "overwrite_output_dir": true,
+      "per_device_train_batch_size": 1,
+      "gradient_accumulation_steps": 8,
+      "eval_strategy": "no",
+      "save_steps": 500,
+      "logging_steps": 10,
+      "fp16": true,
+      "dataloader_num_workers": 8,
+      "report_to": "tensorboard",
+      "ddp_find_unused_parameters": false,
+      "learning_rate": 0.0001,
+      "lr_scheduler_type": "linear",
+      "warmup_steps": 1000,
+      "dataloader_persistent_workers": true,
+      "save_safetensors": false,
+      "ignore_data_skip": false,
+      "max_grad_norm": 10.0,
+      "deepspeed": "pretraining/config/pretraining/deepspeed_config_fp16.json",
+      "output_dir": "output_dir/pretraining/pretraining_checkpoints/pretrained_model",
+      "logging_dir": "output_dir/pretraining/pretraining_logs/pretrained_model"
+  }
+}

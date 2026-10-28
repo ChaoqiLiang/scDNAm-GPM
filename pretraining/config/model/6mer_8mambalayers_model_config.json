@@ -3,20 +3,21 @@
     "model_config": {
       "K_mer": "6mer",
       "d_model": 128,
-      "n_layer": 16,
+      "n_layer": 8,
       "vocab_size": 520,
       "ssm_cfg": {
-        "layer": "Mamba2",
-        "d_state": 64,
+        "d_state": 16,
         "d_conv": 4,
         "expand": 2,
-        "headdim": 64,
+        "dt_rank": "auto",
         "dt_min": 0.001,
         "dt_max": 0.1,
+        "dt_init": "random",
+        "dt_scale": 1.0,
         "dt_init_floor": 0.0001,
         "conv_bias": true,
         "bias": false,
-        "use_mem_eff_path": true
+        "use_fast_path": true
       },
       "initializer_cfg": {
         "initializer_range": 0.02,
@@ -32,4 +33,3 @@
       "tie_embeddings": true
     }
   }
-  

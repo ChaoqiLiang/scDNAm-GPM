@@ -6,14 +6,14 @@
 #
 # Overridables:
 #   NPROC_PER_NODE   GPUs per node (default: auto-detect, fallback 1)
-#   MODEL_CONFIG     model config json   (default: pretraining/config/model/6mer_16mamba2layers_model_config_64dstate.json)
-#   TRAINING_ARGS    training args json  (default: pretraining/config/pretraining/training_args_bf16.json)
+#   MODEL_CONFIG     model config json   (default: pretraining/config/model/6mer_8mambalayers_model_config.json)
+#   TRAINING_ARGS    training args json  (default: pretraining/config/pretraining/training_args_fp16.json)
 #   MASTER_PORT      torchrun port       (default: 16866)
 
 set -e
 
-MODEL_CONFIG="${MODEL_CONFIG:-pretraining/config/model/6mer_16mamba2layers_model_config_64dstate.json}"
-TRAINING_ARGS="${TRAINING_ARGS:-pretraining/config/pretraining/training_args_bf16.json}"
+MODEL_CONFIG="${MODEL_CONFIG:-pretraining/config/model/6mer_8mambalayers_model_config.json}"
+TRAINING_ARGS="${TRAINING_ARGS:-pretraining/config/pretraining/training_args_fp16.json}"
 MASTER_PORT="${MASTER_PORT:-16866}"
 
 if [[ -z "${NPROC_PER_NODE}" ]]; then
