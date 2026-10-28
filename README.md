@@ -42,6 +42,10 @@
   🚧 <strong>NOTICE:</strong> We are currently uploading the <strong>pretraining code, pretraining data and docker</strong>. The upload is expected to be completed by <strong>October 31, 2026</strong>. Please stay tuned! [2026/10/27]
 </p>
 
+<p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
+  ✅ <strong>UPDATE:</strong> The <strong>pretraining code</strong>, <strong>Docker image</strong> (<code>ghcr.io/chaoqiliang/scdnam-gpm</code>), <strong>Apptainer definition</strong> and <strong>explanatory markdown cells for the tutorials</strong> have been uploaded. The <strong>pretraining data</strong> is still being transferred and will be completed by <strong>October 31, 2026</strong>. [2026/10/28]
+</p>
+
 ---
 
 ## 🔥 Key Features
