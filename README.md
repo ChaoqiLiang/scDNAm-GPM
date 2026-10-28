@@ -93,7 +93,7 @@
 | L6-IT      | 92.6%   |           |         |
 
 
-The high prediction accuracy across most cell types further demonstrates the strong performance of scDNAm-GPT in **single-cell methylation annotation tasks**.
+The high prediction accuracy across most cell types further demonstrates the strong performance of scDNAm-GPM in **single-cell methylation annotation tasks**.
 
 ## 🚀 Quick Start
 
@@ -102,8 +102,8 @@ The high prediction accuracy across most cell types further demonstrates the str
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/ChaoqiLiang/scDNAm-GPT.git
-cd scDNAm_GPT
+git clone https://github.com/ChaoqiLiang/scDNAm-GPM.git
+cd scDNAm-GPM
 ```
 
 ### 2. Requirements
@@ -111,8 +111,8 @@ cd scDNAm_GPT
 To install these dependencies, you can run:
 
 ```bash
-conda create -n scDNAm_GPT python=3.10 -y
-conda activate scDNAm_GPT
+conda create -n scDNAm_GPM python=3.10 -y
+conda activate scDNAm_GPM
 pip install -r requirements.txt
 pip install causal-conv1d==1.5.0.post8  mamba-ssm==2.2.4
 ```
@@ -155,10 +155,10 @@ definition file [`apptainer/scDNAm-GPM.def`](apptainer/scDNAm-GPM.def).
 
 We provide example tutorials in the `tutorials` folder to help you get started:
 
-- [**1_celltype_annotation.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/1_celltype_annotation.ipynb) – Demo for cell type annotation  
-- [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
-- [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution
-- [**4_scDNAm_to_expression.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPT/blob/main/tutorials/4_scDNAm_to_expression.ipynb) – Demo for single cell expression prediction from scDNAm
+- [**1_celltype_annotation.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPM/blob/main/tutorials/1_celltype_annotation.ipynb) – Demo for cell type annotation  
+- [**2_pesudo_time.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPM/blob/main/tutorials/2_pesudo_time.ipynb) – Demo for pseudotime analysis  
+- [**3_tumor_detection_on_cfDNA.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPM/blob/main/tutorials/3_tumor_detection_on_cfDNA.ipynb) – Demo for cfDNA tumor deconvolution
+- [**4_scDNAm_to_expression.ipynb**](https://github.com/ChaoqiLiang/scDNAm-GPM/blob/main/tutorials/4_scDNAm_to_expression.ipynb) – Demo for single cell expression prediction from scDNAm
 
 You can open these notebooks and follow the step-by-step instructions to reproduce the analyses. 
 
@@ -177,7 +177,7 @@ Each tutorial requires example data. Please download the archives from **Google 
 
 **Quick extract commands (Linux/macOS / Git Bash):**
 ```bash
-# ensure you're at the project root: scDNAm-GPT/
+# ensure you're at the project root: scDNAm-GPM/
 tar -xzvf human_body.tar.gz -C tutorials/
 tar -xzvf human_esc.tar.gz -C tutorials/
 tar -xzvf tumor_detection.tar.gz -C tutorials/
@@ -199,7 +199,7 @@ tutorials/
 
 ### 4. Fine-Tuning for Colorectal Cancer Type Classification
 
-This repository provides a framework for fine-tuning the **scDNAm-GPT** model on single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Here we focus on colorectal cancer type classification. The model uses a Mamba-based architecture with specialized attention mechanisms for long-sequence classification.
+This repository provides a framework for fine-tuning the **scDNAm-GPM** model on single-cell Whole-Genome Bisulfite Sequencing (scWGBS) data. Here we focus on colorectal cancer type classification. The model uses a Mamba-based architecture with specialized attention mechanisms for long-sequence classification.
 
 #### Required Files
 
@@ -213,13 +213,13 @@ Prepare the fine-tuning dataset and pretrained weights as follows:
 
 **Quick extract commands (Linux/macOS / Git Bash):**
 ```bash
-# ensure you're at the project root: scDNAm-GPT/
+# ensure you're at the project root: scDNAm-GPM/
 tar -xzvf data_and_model.tar.gz -C .
 ```
 
-Extract the archive into the **project root** (the `scDNAm-GPT/` directory). After extraction, your layout should look like:
+Extract the archive into the **project root** (the `scDNAm-GPM/` directory). After extraction, your layout should look like:
 ```
-scDNAm-GPT/
+scDNAm-GPM/
 ├── data_and_model/
 │   ├── crc_hg38/
 │   │   ├── scWGBS_with_nucleotide_change_10mer_chrs_npz/
