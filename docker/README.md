@@ -125,9 +125,13 @@ Bind your data directory if it lives outside the working directory, e.g.
 - `requirements-lock.txt` is the full `pip freeze` of the lab environment minus
   internal/lab-only packages (`brainpp`, `tutel`, `refile` — the last is a
   Megvii-internal file library) that are not used by any code in this
-  repository and are unavailable on PyPI, and minus `torch`/`torchvision`
-  which are installed separately from the CUDA-12.8 index. All 273 remaining
-  pins have been verified to exist on PyPI.
+  repository and are unavailable on PyPI, minus `torch`/`torchvision`
+  which are installed separately from the CUDA-12.8 index, and minus the
+  unused `scimilarity`/`tiledb*`/`zetascale` chain (zetascale requires
+  scikit-learn<1.6 while umap-learn requires >=1.6, which makes the lock
+  unsatisfiable; none of these packages are referenced by this repository).
+  All remaining pins have been verified to exist on PyPI and to be mutually
+  conflict-free via a metadata check.
 - If you upgrade the wheels (new torch/CUDA combo), update the `ARG *_WHL`
   URLs in the Dockerfile and the table above, and publish a new release tag
   (e.g. `env-v2`).
