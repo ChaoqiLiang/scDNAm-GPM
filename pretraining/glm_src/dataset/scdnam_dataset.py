@@ -11,7 +11,6 @@ from dataclasses import dataclass
 
 # Define a global K-mer configuration dictionary
 K_mer_dict = {
-    "10mer": {"N_mod": 131080, "seq_len": 30000000},
     "8mer": {"N_mod": 8192, "seq_len": 425000},
     "6mer": {"N_mod": 512, "seq_len": 2000000},
     "4mer": {"N_mod": 32, "seq_len": 2000000},

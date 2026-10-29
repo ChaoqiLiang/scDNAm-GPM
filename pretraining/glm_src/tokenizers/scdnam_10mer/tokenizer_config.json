@@ -1,7 +1,0 @@
-{
-    "clean_up_tokenization_spaces": true,
-    "eos_token": null,
-    "model_max_length": 5242800000,
-    "tokenizer_class": "EsmTokenizer"
-  }
-  

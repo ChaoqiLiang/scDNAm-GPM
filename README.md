@@ -377,7 +377,7 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain); the tokenized data is being uploaded to the same Google Drive folder as the fine-tuning data.
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_6mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain); the tokenized data is being uploaded to the same Google Drive folder as the fine-tuning data.
 
 #### Submit the job with:
 
@@ -399,7 +399,7 @@ The launcher auto-detects the GPU count; `NPROC_PER_NODE`, `MODEL_CONFIG`, `TRAI
 - **`pretraining/config/model/6mer_8mambalayers_model_config.json`** — manuscript model: 6-mer tokenizer, 8 Mamba layers, d_model 128, d_state 16
 - **`pretraining/config/pretraining/training_args_fp16.json`** — fp16, DeepSpeed, 600k steps, lr 1e-4, batch size 1/GPU with gradient accumulation 8
 - **`pretraining/config/pretraining/deepspeed_config_fp16.json`** — ZeRO stage 0 (DDP-style)
-- Alternatives kept for reference: a larger 10-mer / 16-layer Mamba2 model config and a bf16 training variant (see [`pretraining/README.md`](pretraining/README.md))
+- A bf16 training variant is kept for reference (see [`pretraining/README.md`](pretraining/README.md))
 
 Checkpoints and logs are written to the `output_dir` / `logging_dir` from the training args (gitignored); resume by setting `checkpoint_dir` in the training-args JSON. See [`pretraining/README.md`](pretraining/README.md) for the full documentation.
 

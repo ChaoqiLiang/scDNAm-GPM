@@ -16,7 +16,7 @@ pretraining/
 │   ├── model/scdnam_mixer_seq_simple.py  # Mamba backbone
 │   ├── dataset/scdnam_dataset.py         # dataset + collator (chrs_random etc.)
 │   ├── mambaconfig.py
-│   └── tokenizers/scdnam_10mer/          # 10-mer tokenizer (paper pretrain config)
+│   └── ...
 ├── config/
 │   ├── model/…json           # model configs (tokenizer_name + model_config)
 │   └── pretraining/…json     # training args + DeepSpeed config
@@ -34,7 +34,7 @@ lab-cluster path does not exist (override with `TRITON_CACHE_BASE`).
 Training reads what `data_process/process_scwgbs.py` produces: a CSV manifest
 (`pretraining_csv_file`) plus per-cell `.npz` files (token IDs, methylation
 ratios, positions, chromosome IDs). The manuscript pretraining set is
-`HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv`
+`HumanbodyandMouseBrain_with_nucleotide_change_6mer_tokens_npz_repeat_one.csv`
 (~950k cells: human body + mouse brain). Manifest format:
 
 ```
@@ -79,7 +79,6 @@ Alternatives kept for reference:
 
 | File | Notes |
 |---|---|
-| `config/model/10mer_16mamba2layers_model_config_256dstate.json` | 10-mer, 16 Mamba2 layers, d_model 512; tokenizer bundled at `glm_src/tokenizers/scdnam_10mer` |
 | `config/pretraining/training_args_bf16.json` | bf16 + DeepSpeed ZeRO variant |
 
 Note on `use_dataug`: the pretraining objective is causal next-token
