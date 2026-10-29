@@ -1,6 +1,6 @@
 {
   "root_path": "",
-  "pretraining_csv_file": "data/pretraining_data_csv/HumanbodyandMouseBrain_with_nucleotide_change_6mer_tokens_npz_repeat_one_dim_ge_128.csv",
+  "pretraining_csv_file": "data/pretraining_data_csv/HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one_dim_ge_128.csv",
   "use_truncation": true,
   "use_sample": false,
   "train_use_length_scale": true,

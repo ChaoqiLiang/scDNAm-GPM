@@ -377,7 +377,7 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_6mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain); the tokenized data is being uploaded to the same Google Drive folder as the fine-tuning data.
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain; the `10mer` in the data file names is historical — the model uses the 6-mer tokenizer `src/tokenizers/scdnam_6mer`); the tokenized data is being uploaded to the same Google Drive folder as the fine-tuning data.
 
 #### Submit the job with:
 
