@@ -35,15 +35,7 @@ Training reads what `data_process/process_scwgbs.py` produces: a CSV manifest
 (`pretraining_csv_file`) plus per-cell `.npz` files (token IDs, methylation
 ratios, positions, chromosome IDs). The manuscript pretraining set is
 `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv`
-(~950k cells: human body + mouse brain). The manifest name keeps its
-historical `10mer` label, but the model actually tokenizes with the **6-mer
-tokenizer** (`src/tokenizers/scdnam_6mer`, vocab 518/520) as set in the model
-config. The released Google Drive data folders appear as
-`scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/`; older
-parts/archives may still carry the historical `10mer` label in the folder
-name — both namings are the same data and work fine, just keep the CSV
-manifest paths consistent with the folder names on disk.
-Manifest format:
+(~950k cells: human body + mouse brain). Manifest format:
 
 ```
 file_name,dimension,error

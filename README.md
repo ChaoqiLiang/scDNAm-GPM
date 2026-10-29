@@ -381,11 +381,11 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain; the `10mer` in the manifest name is purely historical — the model tokenizes with the 6-mer tokenizer `src/tokenizers/scdnam_6mer`). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Part 1 is available now**, and Parts 2–3 are still uploading (everything complete by **October 31, 2026**):
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Part 1 is available now**, and Parts 2–3 are still uploading (everything complete by **October 31, 2026**):
 
 📥 **[Download the pretraining data (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
 
-Depending on the part/archive, the downloaded data folders are named either `scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/` (new) or `scWGBS_with_nucleotide_change_10mer_{tokens,ratios,positions,chrs}_npz/` (old, historical label) — **both namings refer to the same 6-mer-tokenized data and are fully supported**. Just make the CSV manifest paths match the actual folder names on disk: regenerate the manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
+Regenerate the CSV manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
 
 #### Submit the job with:
 
