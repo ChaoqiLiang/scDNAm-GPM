@@ -381,9 +381,11 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain; the `10mer` in the data file names is historical — the model uses the 6-mer tokenizer `src/tokenizers/scdnam_6mer`). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Part 1 is available now**, and Parts 2–3 are still uploading (everything complete by **October 31, 2026**):
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain; the `10mer` in the manifest name is purely historical — the model tokenizes with the 6-mer tokenizer `src/tokenizers/scdnam_6mer`). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Part 1 is available now**, and Parts 2–3 are still uploading (everything complete by **October 31, 2026**):
 
 📥 **[Download the pretraining data (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
+
+The downloaded data folders are named `scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/` (the historical `10mer` label has been dropped from the folder names). Regenerate the CSV manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
 
 #### Submit the job with:
 
