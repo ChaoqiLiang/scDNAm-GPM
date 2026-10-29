@@ -473,7 +473,7 @@ def inference():
     output_dir = Path(inference_args_dict["output_dir"])
     output_dir.mkdir(parents=True, exist_ok=True)
     for dataset_name, dataset in datasets.items():
-        print(f"正在推理 {dataset_name} 数据集...")
+        print(f"Running inference on the {dataset_name} dataset...")
         run_inference_on_dataset(
             model, dataset, tokenizer, data_collator, 
             device, output_dir, dataset_name, 

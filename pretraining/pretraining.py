@@ -20,8 +20,8 @@ import uuid
 import logging
 logging.basicConfig(level=logging.DEBUG)
 import warnings
-warnings.simplefilter('default')  # 设置为默认过滤器，显示所有警告
-warnings.filterwarnings('always', category=UserWarning)  # 显示用户警告
+warnings.simplefilter('default')  # restore the default filter so all warnings surface
+warnings.filterwarnings('always', category=UserWarning)  # always show UserWarnings
 
 def is_main_process():
     if not dist.is_available() or not dist.is_initialized():
@@ -31,7 +31,7 @@ def is_main_process():
 class scDNAmTrainer(Trainer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 用于累积 micro-step 的统计
+        # accumulates per-micro-step statistics
         self._accum_loss_meth = 0.0
         self._accum_aux_loss = 0.0
         self._accum_count = 0
@@ -53,21 +53,21 @@ class scDNAmTrainer(Trainer):
         if self.args.past_index >= 0:
             self._past = outputs[self.args.past_index]
 
-        # ====== ✅ 对齐 gradient_accumulation_steps 的记录方式 ======
+        # ====== ✅ align logging with gradient_accumulation_steps ======
         if isinstance(outputs, dict):
             loss_meth = outputs.get("loss_meth", None)
             aux_loss = outputs.get("aux_loss", None)
 
-            # 1) 每个 micro-step 都先累积（用 float，避免图/显存）
+            # 1) accumulate on every micro-step (keep floats to avoid holding the graph/VRAM)
             if loss_meth is not None:
                 self._accum_loss_meth += float(loss_meth.detach())
             if aux_loss is not None:
                 self._accum_aux_loss += float(aux_loss.detach())
             self._accum_count += 1
 
-            # 2) 只有在“将要同步梯度”的那个 micro-step（即一个 optimizer step 的末尾）才考虑 log
+            # 2) only consider logging on the micro-step about to sync gradients (end of an optimizer step)
             if self.accelerator.sync_gradients:
-                # 只有 logging_steps 触发时才真正 log（跟 Trainer 的 step 日志对齐）
+                # actually log only when logging_steps fires (aligned with Trainer's step logs)
                 if self.args.logging_strategy == "steps" and self.args.logging_steps > 0:
                     if (self.state.global_step % self.args.logging_steps) == 0:
                         logs = {}
@@ -78,7 +78,7 @@ class scDNAmTrainer(Trainer):
                         if logs:
                             self.log(logs)
 
-                # 3) 一个 optimizer step 结束，清空累积器
+                # 3) one optimizer step finished, reset the accumulators
                 self._accum_loss_meth = 0.0
                 self._accum_aux_loss = 0.0
                 self._accum_count = 0
@@ -294,24 +294,24 @@ if __name__ == "__main__":
     import os, uuid, datetime
     import torch
 
-    # ========== A) NCCL / torch.distributed 防 hang 的常用环境变量 ==========
-    # 让 NCCL 出错能更快暴露，而不是默默卡死
+    # ========== A) common NCCL / torch.distributed env vars to prevent hangs ==========
+    # make NCCL errors surface quickly instead of silently hanging
     os.environ.setdefault("NCCL_ASYNC_ERROR_HANDLING", "1")
     os.environ.setdefault("TORCH_DISTRIBUTED_DEBUG", "DETAIL")
     os.environ.setdefault("NCCL_DEBUG", "INFO")
-    # 如果你们集群 IB/网络经常抖，可临时试试下面两条（排查用）
+    # if your cluster's IB/network is flaky, try the two lines below temporarily (for debugging)
     # os.environ.setdefault("NCCL_IB_DISABLE", "1")
     # os.environ.setdefault("NCCL_P2P_DISABLE", "1")
 
-    # ========== B) 只在缺失时补齐 MASTER_ADDR/PORT（避免覆盖 torchrun） ==========
+    # ========== B) fill in MASTER_ADDR/PORT only if missing (do not override torchrun) ==========
     if "MASTER_ADDR" not in os.environ:
-        # Slurm 环境才有 scontrol
+        # scontrol only exists in Slurm environments
         hostnames = os.popen("scontrol show hostnames $SLURM_JOB_NODELIST").read().split()
         os.environ["MASTER_ADDR"] = hostnames[0] if hostnames else "127.0.0.1"
 
     os.environ.setdefault("MASTER_PORT", "16866")
 
-    # ========== C) 只在缺失时映射 SLURM -> torch.distributed（避免覆盖 torchrun） ==========
+    # ========== C) map SLURM -> torch.distributed only if missing (do not override torchrun) ==========
     if "RANK" not in os.environ and "SLURM_PROCID" in os.environ:
         os.environ["RANK"] = os.environ["SLURM_PROCID"]
     if "LOCAL_RANK" not in os.environ and "SLURM_LOCALID" in os.environ:
@@ -319,17 +319,17 @@ if __name__ == "__main__":
     if "WORLD_SIZE" not in os.environ and "SLURM_NTASKS" in os.environ:
         os.environ["WORLD_SIZE"] = os.environ["SLURM_NTASKS"]
 
-    # 读 rank 信息（torchrun 一定会给；slurm 也会给）
+    # read rank info (always provided by torchrun; Slurm provides it too)
     global_rank = int(os.environ.get("RANK", "0"))
     local_rank  = int(os.environ.get("LOCAL_RANK", "0"))
     world_size  = int(os.environ.get("WORLD_SIZE", "1"))
 
-    # ========== D) 绑 GPU ==========
+    # ========== D) bind GPUs ==========
     if torch.cuda.is_available():
         torch.cuda.set_device(local_rank)
 
-    # ========== E) ✅ Triton cache 每个 rank 单独目录（强烈建议必须开） ==========
-    # 否则多进程同时 triton compile/写 cache，极易出现某个 rank 卡住 → NCCL timeout
+    # ========== E) ✅ one Triton cache dir per rank (strongly recommended) ==========
+    # otherwise concurrent triton compiles/cache writes can hang one rank -> NCCL timeout
     rank_str = str(global_rank)
     unique_id = os.environ.get("SLURM_JOB_ID", "") or str(uuid.uuid4())
     # Triton cache per rank (avoid multi-process write races -> NCCL hangs).
@@ -343,10 +343,10 @@ if __name__ == "__main__":
     os.environ["TRITON_CACHE_DIR"] = triton_cache
     os.makedirs(triton_cache, exist_ok=True)
 
-    # ========== F) 复现用种子 ==========
+    # ========== F) seed for reproducibility ==========
     set_seed(42)
 
-    # ========== G) 打印关键信息 ==========
+    # ========== G) print key info ==========
     print(
         f"[rank {global_rank}/{world_size}] local_rank={local_rank} "
         f"MASTER_ADDR={os.environ.get('MASTER_ADDR')} MASTER_PORT={os.environ.get('MASTER_PORT')} "

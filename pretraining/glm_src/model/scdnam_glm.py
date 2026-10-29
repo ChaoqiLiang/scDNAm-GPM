@@ -15,14 +15,14 @@ import torch.nn.functional as F
 import torch.nn.init as init
 import math
 
-# === 初始化函数 ===
+# === initialization functions ===
 def apply_custom_init(module):
     if isinstance(module, nn.Linear):
         nn.init.xavier_uniform_(module.weight)
         if module.bias is not None:
             nn.init.zeros_(module.bias)
 
-# === 正弦时间嵌入 ===
+# === sinusoidal time embedding ===
 class SinusoidalTimestepEmbedding(nn.Module):
     def __init__(self, embedding_dim, max_period=10000):
         super().__init__()
@@ -37,7 +37,7 @@ class SinusoidalTimestepEmbedding(nn.Module):
         sinusoid = timesteps[:, None].float() * torch.exp(exponent)[None, :]
         return torch.cat([torch.sin(sinusoid), torch.cos(sinusoid)], dim=-1)
 
-# === 去噪网络 ===
+# === denoising network ===
 class DiffusionDenoiseNetwork(nn.Module):
     def __init__(self, cond_dim, timestep_dim=64, hidden_dim=256):
         super().__init__()
@@ -121,10 +121,10 @@ class DiffusionHead(nn.Module):
 
 
 
-# 备份原 forward（可选）
+# back up the original forward (optional)
 original_forward = FlashCrossAttention.forward
 
-# 新的 forward 方法
+# new forward method
 def custom_forward(
     self,
     q,
@@ -162,7 +162,7 @@ def custom_forward(
             alibi_slopes=self.alibi_slopes,
             window_size=self.window_size,
             deterministic=self.deterministic,
-            return_attn_probs=False  # 添加这里
+            return_attn_probs=False  # added here
         )
     else:
         batch_size, seqlen_q = q.shape[0], q.shape[1]
@@ -177,10 +177,10 @@ def custom_forward(
             alibi_slopes=self.alibi_slopes,
             window_size=self.window_size,
             deterministic=self.deterministic,
-            return_attn_probs=True  # 添加这里
+            return_attn_probs=True  # added here
         )
 
-# 替换 forward 方法
+# replace the forward method
 FlashCrossAttention.forward = custom_forward
 
 
@@ -206,65 +206,65 @@ def grad_reverse(x: torch.Tensor, lambd: float = 1.0) -> torch.Tensor:
 
 def random_mask(sequence, mask_token_id, mask_prob=0.1):
     """
-    随机遮盖序列，基于 PyTorch 操作，支持 CUDA 张量。
+    Randomly mask a sequence using PyTorch ops, CUDA-tensor friendly.
     Args:
-        sequence: 原始序列 (Tensor)
-        mask_token_id: 遮盖标记ID (int)
-        mask_prob: 遮盖概率 (float)
+        sequence: the original sequence (Tensor)
+        mask_token_id: the mask token ID (int)
+        mask_prob: masking probability (float)
     Returns:
-        遮盖后的序列 (Tensor)
+        the masked sequence (Tensor)
     """
-    # 生成随机掩码
+    # generate a random mask
     mask = torch.rand(sequence.shape, device=sequence.device) < mask_prob
-    # 根据掩码替换值
+    # replace values according to the mask
     return torch.where(mask, torch.tensor(mask_token_id, device=sequence.device), sequence)
 
 def random_replace(sequence, tokenizer, replace_prob=0.1, replace_condition=None):
     """
-    随机将序列中的 token 替换为符合条件的随机 token。
+    Randomly replace tokens in the sequence with random tokens satisfying a condition.
     
     Args:
-        sequence: 原始序列 (Tensor)，形状为 (batch_size, sequence_length)。
-        tokenizer: 用于替换的 tokenizer 对象。
-        replace_prob: 替换的概率 (float)。
-        replace_condition: 自定义替换条件函数 (callable)，用于筛选 vocab 中的替换 token。
+        sequence: the original sequence (Tensor) of shape (batch_size, sequence_length).
+        tokenizer: the tokenizer object used for replacement.
+        replace_prob: replacement probability (float).
+        replace_condition: custom condition callable used to pick replacement tokens from the vocab.
     
     Returns:
-        替换后的序列 (Tensor)。
+        the sequence after replacement (Tensor).
     """
-    # 获取符合条件的 token
+    # collect tokens satisfying the condition
     vocab = torch.arange(tokenizer.vocab_size, device=sequence.device)
     if replace_condition:
         vocab = vocab[replace_condition(vocab)]
     
-    # 生成伯努利分布掩码
+    # generate a Bernoulli mask
     replace_mask = torch.bernoulli(torch.full(sequence.shape, replace_prob, device=sequence.device)).bool()
 
-    # 从符合条件的 token 中随机采样
+    # sample randomly from the eligible tokens
     random_tokens = vocab[torch.randint(len(vocab), sequence.shape, device=sequence.device)]
 
-    # 根据掩码替换 token
+    # replace tokens according to the mask
     return torch.where(replace_mask, random_tokens, sequence)
 
 def random_replace_with_shared_mask(sequence1, sequence2, tokenizer, replace_prob=0.1, condition1=None):
     """
-    随机将 sequence1 和 sequence2 中的 token 替换为符合条件的随机 token，并确保替换的位置一致。
+    Randomly replace tokens in sequence1 and sequence2 with eligible random tokens at identical positions.
     
     Args:
-        sequence1: 第一个序列 (Tensor)。
-        sequence2: 第二个序列 (Tensor)。
-        tokenizer: 用于替换的 tokenizer 对象。
-        replace_prob: 替换的概率 (float)。
-        condition1: 第一个序列的替换条件函数。
-        condition2: 第二个序列的替换条件函数。
+        sequence1: the first sequence (Tensor).
+        sequence2: the second sequence (Tensor).
+        tokenizer: the tokenizer object used for replacement.
+        replace_prob: replacement probability (float).
+        condition1: replacement condition for the first sequence.
+        condition2: replacement condition for the second sequence.
     
     Returns:
-        (sequence1_replaced, sequence2_replaced): 替换后的两个序列。
+        (sequence1_replaced, sequence2_replaced): the two sequences after replacement.
     """
-    # 生成共享的替换掩码
+    # generate the shared replacement mask
     replace_mask = torch.bernoulli(torch.full(sequence1.shape, replace_prob, device=sequence1.device)).bool()
 
-    # 获取符合条件的 token
+    # collect tokens satisfying the condition
     vocab = torch.arange(tokenizer.vocab_size, device=sequence1.device)
     if condition1:
         vocab1 = vocab[condition1(vocab)]
@@ -275,11 +275,11 @@ def random_replace_with_shared_mask(sequence1, sequence2, tokenizer, replace_pro
     # else:
     #     vocab2 = vocab
 
-    # 从 vocab1 和 vocab2 中随机采样 token
+    # sample tokens randomly from vocab1 and vocab2
     random_tokens1 = vocab1[torch.randint(len(vocab1), sequence1.shape, device=sequence1.device)]
     random_tokens2 = random_tokens1 + 1 #vocab2[torch.randint(len(vocab2), sequence2.shape, device=sequence2.device)]
 
-    # 根据共享的掩码替换 token
+    # replace tokens according to the shared mask
     sequence1_replaced = torch.where(replace_mask, random_tokens1, sequence1)
     sequence2_replaced = torch.where(replace_mask, random_tokens2, sequence2)
 
@@ -287,16 +287,16 @@ def random_replace_with_shared_mask(sequence1, sequence2, tokenizer, replace_pro
 
 def random_noise(methy_ratios, scale=0.05):
     """
-    在甲基化比例中添加随机噪声，基于 PyTorch 操作。
+    Add random noise to methylation ratios using PyTorch ops.
     Args:
-        methy_ratios: 原始甲基化比例 (Tensor)
-        scale: 噪声的幅度 (float)
+        methy_ratios: the original methylation ratios (Tensor)
+        scale: noise magnitude (float)
     Returns:
-        添加噪声后的甲基化比例 (Tensor)
+        the noised methylation ratios (Tensor)
     """
-    # 生成正态分布的噪声
+    # generate Gaussian noise
     noise = torch.normal(mean=0.0, std=scale, size=methy_ratios.shape, device=methy_ratios.device)
-    # 添加噪声并裁剪到范围 [0, 1]
+    # add noise and clip to [0, 1]
     return torch.clamp(methy_ratios + noise, min=0.0, max=1.0)
 
 class scDNAmGLMLMHeadModelwithLoss(MambaLMHeadModel):
@@ -318,9 +318,9 @@ class scDNAmGLMLMHeadModelwithLoss(MambaLMHeadModel):
         self.tokenizer = tokenizer
         self.use_dataug = use_dataug
 
-        # 定义替换条件
-        self.condition_unmethy = lambda x: (x > 6) & (x % 2 == 1)  # ID > 6 且为奇数
-        # self.condition_methy = lambda x: (x > 6) & (x % 2 == 0)    # ID > 6 且为偶数
+        # define replacement conditions
+        self.condition_unmethy = lambda x: (x > 6) & (x % 2 == 1)  # ID > 6 and odd
+        # self.condition_methy = lambda x: (x > 6) & (x % 2 == 0)    # ID > 6 and even
         
         print("------------------------------------------\nShape of lm_head.weight: ", self.lm_head.weight.shape, "\n------------------------------------------")
 
@@ -427,27 +427,27 @@ class scDNAmGLMLMHeadModelwithLoss(MambaLMHeadModel):
 
 
 def masked_mean(hidden_states, attention_mask):
-    # 输入说明:
+    # inputs:
     # hidden_states: [batch_size, sequence_length, hidden_dim]
-    # attention_mask: [batch_size, sequence_length], 1表示有效token，0表示padding
+    # attention_mask: [batch_size, sequence_length], 1 = valid token, 0 = padding
 
-    # 扩展mask的维度以匹配hidden_states
+    # expand the mask dims to match hidden_states
     mask_expanded = attention_mask.unsqueeze(-1).expand_as(hidden_states).float()
 
-    # 应用mask：将padding位置的hidden_states置零
+    # apply the mask: zero out hidden_states at padding positions
     masked_hidden = hidden_states * mask_expanded
 
-    # 计算每个序列的有效长度（沿序列长度维度求和）
+    # compute each sequence's valid length (sum along the sequence dim)
     valid_lengths = mask_expanded.sum(dim=1)  # [batch_size, hidden_dim]
 
-    # 对mask后的hidden_states求和，并除以有效长度
+    # sum the masked hidden_states and divide by the valid length
     summed_hidden = masked_hidden.sum(dim=1)  # [batch_size, hidden_dim]
-    mean_hidden = summed_hidden / valid_lengths  # 自动广播除法
+    mean_hidden = summed_hidden / valid_lengths  # broadcasted division
 
-    # 处理可能存在的全零mask（防止除以零）
+    # guard against an all-zero mask (avoid division by zero)
     mean_hidden = torch.where(valid_lengths > 0, mean_hidden, torch.zeros_like(mean_hidden))
 
-    return mean_hidden  # 输出形状 [batch_size, hidden_dim]
+    return mean_hidden  # output shape [batch_size, hidden_dim]
 
 
 class scDNAmGLMForSequenceClassification(scDNAmGLMLMHeadModelwithLoss):
@@ -1412,15 +1412,15 @@ class scDNAmGLMForPredictscRNAseq(scDNAmGLMForSequenceClassification):
 
         # Compute MSE loss
         
-        # 假设 predicted_probs 和 labels 是相同 shape 的张量
-        # 比如 shape: (batch_size, num_genes)
-        # mask_labels = labels > 0  # 只保留 labels > 0 的位置
+        # assume predicted_probs and labels are tensors of the same shape
+        # e.g. shape: (batch_size, num_genes)
+        # mask_labels = labels > 0  # keep only positions with labels > 0
 
-        # 取出需要计算的位置
+        # select the positions to compute on
         # masked_preds = predicted_probs[mask_labels]
         # masked_labels = labels[mask_labels]
 
-        # 计算 MSELoss
+        # compute MSELoss
         if labels is not None:
             loss_fn = nn.MSELoss()
             loss = loss_fn(predicted_probs, labels)
@@ -1603,15 +1603,15 @@ class scDNAmGLMForLungTumor(scDNAmGLMForSequenceClassification):
 
         # Compute MSE loss
         
-        # 假设 predicted_probs 和 labels 是相同 shape 的张量
-        # 比如 shape: (batch_size, num_genes)
-        # mask_labels = labels > 0  # 只保留 labels > 0 的位置
+        # assume predicted_probs and labels are tensors of the same shape
+        # e.g. shape: (batch_size, num_genes)
+        # mask_labels = labels > 0  # keep only positions with labels > 0
 
-        # 取出需要计算的位置
+        # select the positions to compute on
         # masked_preds = predicted_probs[mask_labels]
         # masked_labels = labels[mask_labels]
 
-        # 计算 MSELoss
+        # compute MSELoss
         if labels is not None:
             labels = labels.float().half()
             loss_fn = nn.MSELoss()
@@ -1794,15 +1794,15 @@ class scDNAmGLMForPerturbationscRNAseq(scDNAmGLMForSequenceClassification):
 
         # Compute MSE loss
         
-        # 假设 predicted_probs 和 labels 是相同 shape 的张量
-        # 比如 shape: (batch_size, num_genes)
-        # mask_labels = labels > 0  # 只保留 labels > 0 的位置
+        # assume predicted_probs and labels are tensors of the same shape
+        # e.g. shape: (batch_size, num_genes)
+        # mask_labels = labels > 0  # keep only positions with labels > 0
 
-        # 取出需要计算的位置
+        # select the positions to compute on
         # masked_preds = predicted_probs[mask_labels]
         # masked_labels = labels[mask_labels]
 
-        # 计算 MSELoss
+        # compute MSELoss
         if labels is not None:
             loss_fn = nn.MSELoss()
             loss = loss_fn(predicted_probs, labels)
@@ -1832,14 +1832,14 @@ class scDNAmGLMForPerturbationscRNAseq(scDNAmGLMForSequenceClassification):
 
 # def sample_nonzero_indices(labels: torch.Tensor, k: int):
 #     """
-#     从每个样本中采样最多 k 个非零元素索引（不重复采样），不足 k 的不补足，只在最终用 -1 补齐成 max_len。
+#     Sample up to k non-zero indices per sample (without replacement); do not pad up to k here, only pad to max_len with -1 at the end.
     
-#     参数:
-#         labels: Tensor of shape (B, G)，二值矩阵（0/1），表示哪些基因被表达
-#         k: int，每个样本最大采样数量
-#     返回:
-#         padded_indices: LongTensor of shape (B, max_len)，采样后用 -1 补齐
-#         valid_lengths: LongTensor of shape (B,)，每个样本实际采样数量
+#     Args:
+#         labels: Tensor of shape (B, G), binary matrix (0/1) marking expressed genes
+#         k: int, max number of indices to sample per element
+#     Returns:
+#         padded_indices: LongTensor of shape (B, max_len), padded with -1 after sampling
+#         valid_lengths: LongTensor of shape (B,), actual number sampled per element
 #     """
 #     B, G = labels.shape
 #     device = labels.device
@@ -1864,7 +1864,7 @@ class scDNAmGLMForPerturbationscRNAseq(scDNAmGLMForSequenceClassification):
 
 #     max_len = max(len(s) for s in sampled_indices)
 
-#     # 用 -1 补齐
+#     # pad with -1
 #     padded_indices = torch.full((B, max_len), fill_value=-1, dtype=torch.long, device=device)
 #     for i, s in enumerate(sampled_indices):
 #         padded_indices[i, :len(s)] = s
@@ -1874,14 +1874,14 @@ class scDNAmGLMForPerturbationscRNAseq(scDNAmGLMForSequenceClassification):
 
 def sample_random_indices(labels: torch.Tensor, k: int):
     """
-    从每个样本中随机采样最多 k 个索引（不考虑 labels 是否为 0），不重复采样，不足 k 的直接返回原始数量，最终用 -1 补齐为 max_len。
+    Randomly sample up to k indices per element (regardless of whether labels are 0), without replacement; if fewer than k exist return what is available, then pad with -1 up to max_len.
     
-    参数:
-        labels: Tensor of shape (B, G)，原始标签（0/1），此处不再区分，只是为了获取形状
-        k: int，每个样本最多采样数量
-    返回:
-        padded_indices: LongTensor of shape (B, max_len)，采样后用 -1 补齐
-        valid_lengths: LongTensor of shape (B,)，每个样本实际采样数量
+    Args:
+        labels: Tensor of shape (B, G), raw labels (0/1), not distinguished here, only used for the shape
+        k: int, max number of indices to sample per element
+    Returns:
+        padded_indices: LongTensor of shape (B, max_len), padded with -1 after sampling
+        valid_lengths: LongTensor of shape (B,), actual number sampled per element
     """
     B, G = labels.shape
     device = labels.device
@@ -1899,7 +1899,7 @@ def sample_random_indices(labels: torch.Tensor, k: int):
 
     max_len = max(len(s) for s in sampled_indices)
 
-    # 用 -1 补齐
+    # pad with -1
     padded_indices = torch.full((B, max_len), fill_value=-1, dtype=torch.long, device=device)
     for i, s in enumerate(sampled_indices):
         padded_indices[i, :len(s)] = s
@@ -1955,7 +1955,7 @@ class scDNAmGLMForPredictAllscRNAseq(scDNAmGLMForSequenceClassification):
         self.k = 16
 
         if cross_attn_every_hidden_states:
-            # 每层一个 gene embedding（或 embedding 的投影）
+            # one gene embedding per layer (or a projection of the embedding)
             self.gene_embedding_layers = nn.ModuleList(
                 [
                     nn.Embedding(num_embeddings=num_labels, embedding_dim=self.projection_dim).to(device)
@@ -1963,7 +1963,7 @@ class scDNAmGLMForPredictAllscRNAseq(scDNAmGLMForSequenceClassification):
                 ]
             )
         else:
-            # 通用的 gene embedding
+            # shared gene embedding
             self.gene_embedding = nn.Embedding(num_embeddings=num_labels, embedding_dim=self.projection_dim).to(device)
 
         # projection_dim is created in the parent’s __init__
@@ -1985,10 +1985,10 @@ class scDNAmGLMForPredictAllscRNAseq(scDNAmGLMForSequenceClassification):
         device = labels.device
 
         if self.training:
-            # 训练阶段：仅对非零位置进行采样
-            sampled_gene_indices, _ = sample_random_indices(labels, self.k)  # shape: (B, ≤k)，补齐为 -1
+            # training: sample only non-zero positions
+            sampled_gene_indices, _ = sample_random_indices(labels, self.k)  # shape: (B, <=k), padded with -1
         else:
-            # 验证 / 测试阶段：直接使用所有位置（0 ~ G-1）
+            # eval / test: use all positions directly (0 ~ G-1)
             sampled_gene_indices = torch.arange(G, device=device).expand(B, -1)  # shape: (B, G)
         # print("#####################################sampled_gene_indices:", sampled_gene_indices)
 

@@ -1114,26 +1114,26 @@ class TokensRatiosPredictscRNAseqDataset(Dataset):
 
 def sample_nonzero_indices(labels: np.ndarray, k: int) -> np.ndarray:
     """
-    从一个样本的 label 向量中采样 k 个非零元素的索引（不重复采样，数量不足则重复补齐）。
+    Sample k non-zero indices from one sample's label vector (without replacement; repeat to fill if fewer than k).
 
-    参数:
-        labels: np.ndarray of shape (G,)，二值向量（0/1），表示哪些基因被表达
-        k: int，采样数量
+    Args:
+        labels: np.ndarray of shape (G,), binary vector (0/1) marking expressed genes
+        k: int, number of indices to sample
 
-    返回:
-        sampled_indices: np.ndarray of shape (k,)，表示在原始 labels 中的索引位置
+    Returns:
+        sampled_indices: np.ndarray of shape (k,), index positions into the original labels
     """
-    # 找出所有非零的索引位置
+    # find all non-zero index positions
     nonzero_indices = np.flatnonzero(labels)
 
     if len(nonzero_indices) == 0:
-        # 没有非零元素，返回全是 0 的索引（可自定义处理）
+        # no non-zero elements, return all-zero indices (customize as needed)
         return np.zeros(k, dtype=int)
     elif len(nonzero_indices) >= k:
-        # 非零位置充足，随机选择 k 个不重复
+        # enough non-zero positions, pick k distinct ones at random
         sampled_indices = np.random.choice(nonzero_indices, size=k, replace=False)
     else:
-        # 不足 k 个，允许重复补齐
+        # fewer than k, allow repeats to fill
         sampled_indices = np.random.choice(nonzero_indices, size=k, replace=True)
 
     return sampled_indices
@@ -1571,7 +1571,7 @@ class TokensRatiosLoadALLscRNAseqDataset(TokensRatiosDataset):
 
             tokens = self.loadata(token_path)
 
-            # 加载配套数据
+            # load companion data
             ratios_path = Path(str(token_path).replace("tokens", "ratios").replace(".npy", "_ratios.npy").replace(".npz", "_ratios.npz"))
             chrs_path = Path(str(token_path).replace("tokens", "chrs").replace(".npy", "_chrs.npy").replace(".npz", "_chrs.npz"))
             pos_path  = Path(str(token_path).replace("tokens", "positions").replace(".npy", "_positions.npy").replace(".npz", "_positions.npz"))
@@ -1583,7 +1583,7 @@ class TokensRatiosLoadALLscRNAseqDataset(TokensRatiosDataset):
             chrs = self.loadata(chrs_path)
             positions = self.loadata(pos_path)
 
-            # Step 1: 选中染色体
+            # Step 1: select chromosomes
             target_chr = row["chr"]
             chr_mask = (chrs == target_chr)
 
@@ -1602,11 +1602,11 @@ class TokensRatiosLoadALLscRNAseqDataset(TokensRatiosDataset):
             ratios = ratios[center_mask]
             positions = positions[center_mask]
 
-            # 丢弃空段
+            # drop empty segments
             if len(tokens) == 0:
                 continue
 
-            # 保存
+            # save
             self.tokens_data.append(tokens)
             self.methy_ratios_data.append(ratios)
             self.positions_data.append(positions)
@@ -2171,14 +2171,14 @@ class scdnam_collate_DeconvTokensRatios(scdnam_collate_TokensRatios):
 
 class TokensRatiosWithBinsDataset(TokensRatiosDataset):
     """
-    继承 TokensRatiosDataset，在返回样本时额外提供:
-        - bin_ratios: [bin_dim] 全基因组 sliding window 甲基化比例
-        - bin_counts: [bin_dim] 对应 coverage，用于 diffusion loss 加权
+    Extends TokensRatiosDataset, additionally returning per sample:
+        - bin_ratios: [bin_dim] genome-wide sliding-window methylation ratios
+        - bin_counts: [bin_dim] corresponding coverage, used to weight the diffusion loss
 
-    Args 新增:
-        bins_root: 存放 *.win{window}_step{step}_ratios.npz 的目录
-        window_size, step_size: 生成 bins 时用的参数，用来推断文件名
-        bin_dim: (可选) 固定 bins 向量长度；不传则首次 __getitem__ 自动推断
+    New Args:
+        bins_root: directory holding *.win{window}_step{step}_ratios.npz files
+        window_size, step_size: parameters used when generating the bins, used to infer file names
+        bin_dim: (optional) fixed bins vector length; if omitted it is inferred on first __getitem__
     """
 
     def __init__(
@@ -2230,16 +2230,16 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
         self.bins_root = Path(bins_root)
         self.window_size = window_size
         self.step_size = step_size
-        self.bin_dim = bin_dim  # 可选，若 None 则第一次 __getitem__ 时根据第一个样本推断
+        self.bin_dim = bin_dim  # optional; if None, inferred from the first sample on the first __getitem__
 
-        # 统一的染色体顺序，用于 flatten 全基因组 bins
-        # 注意：滑窗脚本里 normalize_chr_id 对 X/Y/M 的编码是：
+        # canonical chromosome order used to flatten genome-wide bins
+        # note: the sliding-window script encodes X/Y/M via normalize_chr_id as:
         #   X -> -1, Y -> 0, M -> -2
-        # 保存时 key 类似 ratios_chr1, ratios_chr2, ..., ratios_chr-1, ratios_chr0, ratios_chr-2
+        # saved keys look like ratios_chr1, ratios_chr2, ..., ratios_chr-1, ratios_chr0, ratios_chr-2
         self.chr_order = selective_chrs
         # (
         #     [str(i) for i in range(1, 23)]  # '1' ... '22'
-        #     + [-1, 0, -2]                   # X, Y, M 对应的 key
+        #     + [-1, 0, -2]                   # keys for X, Y, M
         # )
 
     def _get_chr_len_and_nbins(self, chr_id, bin_size):
@@ -2265,10 +2265,10 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
             r = bins_npz[rk].astype(np.float32)
             c = bins_npz[ck].astype(np.float32)
 
-            # 记录 NaN 位置
+            # record NaN positions
             nan_mask = np.isnan(r)
 
-            # 先填 0，维持shape
+            # fill with 0 first to keep the shape
             r[nan_mask] = 0.0
             c[nan_mask] = 0.0
 
@@ -2282,11 +2282,11 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
             mapping = {u: s for u, s in zip(unique, shuffled)}
             chr_bins = sorted(chr_bins, key=lambda x: mapping[x[0]])
 
-        # flatten拼接
+        # flatten and concatenate
         bin_ratios  = np.concatenate([b[1] for b in chr_bins], axis=0)
         bin_counts  = np.concatenate([b[2] for b in chr_bins], axis=0)
 
-        # 生成 flatten 对应的 mask
+        # build the mask corresponding to the flattened vector
         flat_mask = np.concatenate([b[3] for b in chr_bins], axis=0)
 
         if self.bin_dim is None:
@@ -2299,92 +2299,92 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
 
     def _pad_or_truncate_bins(self, bin_ratios, bin_counts, bin_dim):
         """
-        返回：
+        Returns:
         - padded_ratios (float32)
         - padded_counts (float32)
-        - mask (bool)  True=有效数据  False=NaN或Padding
+        - mask (bool)  True = valid data, False = NaN or padding
         """
 
-        # 1) 先记录原始 NaN 位置
-        orig_nan_mask = np.isnan(bin_ratios)  # True = NaN 位置
+        # 1) first record the original NaN positions
+        orig_nan_mask = np.isnan(bin_ratios)  # True = NaN position
 
-        # 2) 把 NaN 替换成 -1
+        # 2) replace NaN with -1
         bin_ratios = np.nan_to_num(bin_ratios, nan=-1.0).astype(np.float32)
         bin_counts = np.nan_to_num(bin_counts, nan=-1.0).astype(np.float32)
 
         L = bin_ratios.shape[0]
 
-        # 直接等长，无需pad/truncate
+        # already the right length, no pad/truncate needed
         if L == bin_dim:
-            mask = ~orig_nan_mask  # NaN位置为False，其余为True
+            mask = ~orig_nan_mask  # False at NaN positions, True elsewhere
             return bin_ratios, bin_counts, mask
 
-        # 3) 过长 → 中心截断
+        # 3) too long -> center truncation
         if L > bin_dim:
             start = (L - bin_dim) // 2
             end = start + bin_dim
-            # 截断 NaN mask 也要同步中心截断
+            # the NaN mask must be center-truncated in sync
             trunc_orig_nan_mask = orig_nan_mask[start:end]
-            mask = ~trunc_orig_nan_mask  # False = NaN 位置
+            mask = ~trunc_orig_nan_mask  # False = NaN position
             return bin_ratios[start:end], bin_counts[start:end], mask
 
-        # 4) 过短 → 右侧padding
+        # 4) too short -> right padding
         padded_ratios = np.full(bin_dim, -1.0, dtype=np.float32)
         padded_counts = np.full(bin_dim, -1.0, dtype=np.float32)
 
         padded_ratios[:L] = bin_ratios
         padded_counts[:L] = bin_counts
 
-        # 5) 构建 mask
-        mask = np.ones(bin_dim, dtype=bool)  # 先全True
-        padded_orig_nan_mask = np.full(bin_dim, True, dtype=bool)  # 默认pad部分都是NaN
-        padded_orig_nan_mask[:L] = orig_nan_mask  # 还原前L个的NaN信息
-        mask[padded_orig_nan_mask] = False  # 所有 NaN 设为 False
-        mask[L:] = False  # pad 位置也设为 False
+        # 5) build the mask
+        mask = np.ones(bin_dim, dtype=bool)  # all True initially
+        padded_orig_nan_mask = np.full(bin_dim, True, dtype=bool)  # treat padded slots as NaN by default
+        padded_orig_nan_mask[:L] = orig_nan_mask  # restore NaN info for the first L slots
+        mask[padded_orig_nan_mask] = False  # set all NaN positions to False
+        mask[L:] = False  # padded positions are also False
 
         return padded_ratios, padded_counts, mask
 
     def _select_bins_for_region(self, chrs_seq, pos_seq, bins_npz, step_size=50_000):
         """
-        chrs_seq:    该 sample 输入的 chrs，长度 = CpG 数（可以是 np.ndarray）
-        pos_seq:     该 sample 输入的 positions（0-based，对应 chrs_seq 逐位）
-        bins_npz:    np.load 出来的滑窗 npz（某个 prefix.win...npz）
-        step_size:   滑窗 step，与预处理一致
+        chrs_seq:    chrs fed to the model for this sample, length = number of CpGs (np.ndarray allowed)
+        pos_seq:     positions for this sample (0-based, aligned element-wise with chrs_seq)
+        bins_npz:    the sliding-window npz loaded via np.load (some prefix.win...npz)
+        step_size:   sliding-window step, matching preprocessing
 
-        返回：
-        bin_ratios_sel: 按 sample["chrs"] 染色体出现顺序拼接后的 bin ratios (1D)
-        bin_counts_sel: 对应的 counts (1D)
-        bin_idx_sel:    每条染色体的 idx_sel 列表，用于 debug（例如 [(chr_id, idx_array), ...]）
+        Returns:
+        bin_ratios_sel: bin ratios (1D) concatenated in chromosome appearance order of sample["chrs"]
+        bin_counts_sel: the corresponding counts (1D)
+        bin_idx_sel:    per-chromosome idx_sel list, for debugging (e.g. [(chr_id, idx_array), ...])
         """
         chrs_seq = np.asarray(chrs_seq)
         pos_seq = np.asarray(pos_seq, dtype=np.int64)
 
-        # ---- 0) 按 chrs_seq 中“首次出现顺序”确定染色体顺序 ----
-        # np.unique 默认排序，这里需要保留“出现顺序”
+        # ---- 0) order chromosomes by first appearance in chrs_seq ----
+        # np.unique sorts by default; here we must preserve appearance order
         unique_chrs, first_idx = np.unique(chrs_seq, return_index=True)
         order = np.argsort(first_idx)
-        chr_order = unique_chrs[order]  # 按 sample["chrs"] 中的顺序
+        chr_order = unique_chrs[order]  # ordered as in sample["chrs"]
 
         all_ratios = []
         all_counts = []
         all_idx_info = []  # [(chr_id, idx_sel_chr), ...]
 
-        # ---- 1) 逐条染色体处理，并按 chr_order 顺序拼接 ----
+        # ---- 1) process chromosomes one by one, concatenating in chr_order ----
         for chr_id in chr_order:
-            # 当前染色体在这个 sample 中的 CpG 位置
+            # this chromosome's CpG positions within this sample
             mask_chr = (chrs_seq == chr_id)
             pos_chr = pos_seq[mask_chr]
             if pos_chr.size == 0:
-                continue  # 理论上不会发生，防御性写法
+                continue  # should not happen; defensive
 
-            # 获取该染色体在 bins_npz 中的键名 key（可能是 '1','2' 或 -1,-2,0 等）
+            # get this chromosome's key in bins_npz ('1','2' or -1,-2,0, etc.)
             key, chr_len, _ = self._get_chr_len_and_nbins(chr_id, bin_size=step_size)
 
-            # 如果某条 chr 在 bins_npz 里没有，对应键会 KeyError，这里做个安全检查（可选）
+            # a chr missing from bins_npz would raise KeyError on its key; safety check (optional)
             starts_key = f"starts_chr{key}"
             if starts_key not in bins_npz:
-                # 可以选择直接跳过，也可以 raise
-                # 这里选择跳过，并记录一下，避免训练直接崩
+                # could skip or raise here
+                # we skip and log, so training does not crash
                 # print(f"[WARN] chr {chr_id} (key={key}) not found in bins_npz, skip.")
                 continue
 
@@ -2393,16 +2393,16 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
             ratios = bins_npz[f"ratios_chr{key}"]
             counts = bins_npz[f"counts_chr{key}"]
 
-            # ---- 2) 当前染色体 CpG 覆盖区域 ----
+            # ---- 2) CpG-covered region of this chromosome ----
             region_start = int(pos_chr.min())
-            region_end   = int(pos_chr.max()) + 1  # 右开区间
+            region_end   = int(pos_chr.max()) + 1  # half-open interval end
 
-            # ---- 3) 找到与该区域有交集的 bins ----
-            # 条件：窗口 [start_i, end_i) 与 [region_start, region_end) 相交
+            # ---- 3) find bins intersecting this region ----
+            # condition: window [start_i, end_i) intersects [region_start, region_end)
             mask_bins = (ends > region_start) & (starts < region_end)
             idx_sel_chr = np.nonzero(mask_bins)[0]
 
-            # 如果这一条 chr 没有任何交集，可以选择跳过
+            # if this chr has no intersecting bins, skipping is an option
             if idx_sel_chr.size == 0:
                 # print(f"[INFO] chr {chr_id} no overlapping bins with region [{region_start}, {region_end})")
                 continue
@@ -2411,9 +2411,9 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
             all_counts.append(counts[idx_sel_chr])
             all_idx_info.append((chr_id, idx_sel_chr))
 
-        # ---- 4) 把所有染色体结果按顺序拼接 ----
+        # ---- 4) concatenate all chromosomes' results in order ----
         if len(all_ratios) == 0:
-            # 没找到任何 bin（理论上不太可能），返回空数组
+            # no bins found (unlikely); return empty arrays
             bin_ratios_sel = np.array([], dtype=np.float32)
             bin_counts_sel = np.array([], dtype=np.int64)
         else:
@@ -2424,11 +2424,11 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
 
     def __getitem__(self, idx: int):
         """
-        在原有 sample 基础上，增加:
+        On top of the base sample, adds:
             - bin_ratios: [bin_dim]
             - bin_counts: [bin_dim]
         """
-        # 先用父类生成基础 sample（tokens + ratios + chrs + positions + labels...）
+        # build the base sample via the parent (tokens + ratios + chrs + positions + labels...)
         sample = super().__getitem__(idx)
 
         file_name = sample["file_names"]  # e.g. something.npy
@@ -2439,19 +2439,19 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
         #     raise FileNotFoundError(f"Bin ratios file not found: {bins_path}")
         # bins_npz = np.load(bin_npz_path, allow_pickle=True)
 
-        # # 2) 从当前 CpG 区域对应的 bins 里拿监督信号 bin_ratios_sel, bin_counts_sel, all_idx_info
+        # # 2) take supervision signals bin_ratios_sel, bin_counts_sel, all_idx_info from the bins covering the current CpG region
         # bin_ratios_sel, bin_counts_sel, _ = self._select_bins_for_region(
         #     chrs_seq=sample["chrs"], pos_seq=sample["positions"],
         #     bins_npz=bins_npz,
         #     step_size=self.step_size,
         # )
 
-        # # 3) 变成固定长度的 bin_dim
+        # # 3) reshape to the fixed bin_dim
         # bin_ratios_fix, bin_counts_fix, flat_masks = self._pad_or_truncate_bins(
         #     bin_ratios_sel, bin_counts_sel, bin_dim=self.bin_dim
         # )
 
-        # 读取该细胞的全基因组 sliding window bins
+        # load this cell's genome-wide sliding-window bins
         bin_ratios, bin_counts, flat_masks = self._load_bins_for_sample(file_name)
 
         sample["bin_ratios"] = bin_ratios
@@ -2464,21 +2464,21 @@ class TokensRatiosWithBinsDataset(TokensRatiosDataset):
 @dataclass
 class scdnam_collate_TokensRatiosWithBins(scdnam_collate_TokensRatios):
     """
-    collate 版本，除了原来的 tokens / ratios / labels 之外，
-    额外把 Dataset 提供的:
+    Collate variant: besides the original tokens / ratios / labels,
+    additionally takes what the Dataset provides:
         - bin_ratios: [bin_dim]
         - bin_counts: [bin_dim]
-    拼成 batch:
+    into a batch:
         - bin_ratios: [B, bin_dim]
         - bin_counts: [B, bin_dim]
-    用于 DDIM diffusion loss。
+    for the DDIM diffusion loss.
     """
 
     def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
-        # 先用父类做原来的拼接
+        # let the parent class do the original collating first
         batch = super().__call__(instances)
 
-        # --------- 1. 收集 bin_ratios / bin_counts ---------
+        # --------- 1. collect bin_ratios / bin_counts ---------
         bin_ratios_list = []
         bin_counts_list = []
         flat_masks_list = []
@@ -2491,9 +2491,9 @@ class scdnam_collate_TokensRatiosWithBins(scdnam_collate_TokensRatios):
             if "flat_masks" in item:
                 flat_masks_list.append(torch.tensor(item["flat_masks"], dtype=torch.bool))
 
-        # --------- 2. stack 成 [B, bin_dim] ---------
+        # --------- 2. stack into [B, bin_dim] ---------
         if len(bin_ratios_list) > 0:
-            # 假设每个样本的 bin_dim 一样
+            # assume every sample has the same bin_dim
             bin_ratios = torch.stack(bin_ratios_list, dim=0)  # [B, bin_dim]
         else:
             bin_ratios = None
