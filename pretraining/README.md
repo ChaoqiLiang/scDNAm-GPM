@@ -38,8 +38,11 @@ ratios, positions, chromosome IDs). The manuscript pretraining set is
 (~950k cells: human body + mouse brain). The manifest name keeps its
 historical `10mer` label, but the model actually tokenizes with the **6-mer
 tokenizer** (`src/tokenizers/scdnam_6mer`, vocab 518/520) as set in the model
-config; the released Google Drive data folders drop the label and are named
-`scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/`.
+config. The released Google Drive data folders appear as
+`scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/`; older
+parts/archives may still carry the historical `10mer` label in the folder
+name — both namings are the same data and work fine, just keep the CSV
+manifest paths consistent with the folder names on disk.
 Manifest format:
 
 ```

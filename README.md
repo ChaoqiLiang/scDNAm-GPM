@@ -385,7 +385,7 @@ The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change
 
 📥 **[Download the pretraining data (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
 
-The downloaded data folders are named `scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/` (the historical `10mer` label has been dropped from the folder names). Regenerate the CSV manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
+Depending on the part/archive, the downloaded data folders are named either `scWGBS_with_nucleotide_change_{tokens,ratios,positions,chrs}_npz/` (new) or `scWGBS_with_nucleotide_change_10mer_{tokens,ratios,positions,chrs}_npz/` (old, historical label) — **both namings refer to the same 6-mer-tokenized data and are fully supported**. Just make the CSV manifest paths match the actual folder names on disk: regenerate the manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
 
 #### Submit the job with:
 
