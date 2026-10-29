@@ -39,11 +39,7 @@
 🧬 **Analyzing Single-Cell Methylation Data** | 🌐 **Whole-Genome-Scale Context Modeling** | 🔬 **Single-CpG Resolution** | ⚡ **Mamba-Powered Speed**
 
 <p align="center" style="background-color: #000000; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  🚧 We are currently uploading the <strong>pretraining code, pretraining data and docker</strong>. The upload is expected to be completed by <strong>October 31, 2026</strong>. Please stay tuned! [2026/10/27]
-</p>
-
-<p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  ✅ <strong>UPDATE:</strong> The <strong>pretraining code</strong>, <strong>Docker image</strong> (<code>ghcr.io/chaoqiliang/scdnam-gpm</code>), <strong>Apptainer definition</strong> and <strong>explanatory markdown cells for the tutorials</strong> have been uploaded. The <strong>pretraining data</strong> is still being transferred and will be completed by <strong>October 31, 2026</strong>. [2026/10/28]
+  🚧 <strong>NOTICE:</strong> The <strong>pretraining data</strong> (3 parts) is being uploaded to Google Drive — <strong>Part 1 is available now</strong>, Parts 2–3 are still transferring. Everything will be complete by <strong>October 31, 2026</strong>. 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Pretraining Data – Google Drive]</strong></a> [2026/10/29]
 </p>
 
 ---
@@ -377,7 +373,9 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain; the `10mer` in the data file names is historical — the model uses the 6-mer tokenizer `src/tokenizers/scdnam_6mer`); the tokenized data is being uploaded to the same Google Drive folder as the fine-tuning data.
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain; the `10mer` in the data file names is historical — the model uses the 6-mer tokenizer `src/tokenizers/scdnam_6mer`). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Part 1 is available now**, and Parts 2–3 are still uploading (everything complete by **October 31, 2026**):
+
+📥 **[Download the pretraining data (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
 
 #### Submit the job with:
 

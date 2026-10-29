@@ -45,6 +45,11 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
+The tokenized pretraining data is being released on Google Drive in **3
+parts** — **Part 1 is available now**, Parts 2–3 still uploading (complete by
+**October 31, 2026**):
+[Pretraining Data – Google Drive](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)
+
 `file_name` entries are joined with `root_path` (empty in the default config,
 so the manifest carries absolute paths). Regenerate the manifest with your own
 paths, or set `root_path` to a common prefix and keep file names relative.
