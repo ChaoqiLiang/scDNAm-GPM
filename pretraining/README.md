@@ -11,8 +11,8 @@ existing pipeline.
 ```
 pretraining/
 ├── pretraining.py            # entry point (HF Trainer, torchrun/SLURM-aware)
-├── glm_src/                  # self-contained pretraining stack
-│   ├── model/scdnam_glm.py               # scDNAmGLMLMHeadModelwithLoss
+├── gpm_src/                  # self-contained pretraining stack
+│   ├── model/scdnam_gpm.py               # scDNAmGPMLMHeadModelwithLoss
 │   ├── model/scdnam_mixer_seq_simple.py  # Mamba backbone
 │   ├── dataset/scdnam_dataset.py         # dataset + collator (chrs_random etc.)
 │   ├── mambaconfig.py
@@ -23,9 +23,10 @@ pretraining/
 └── script/pretraining.sh     # torchrun launcher
 ```
 
-`glm_src` is the newer pretraining stack from the internal scDNAm_GLM project.
-The only edits relative to the internal version: internal imports rewritten
-from `src.*` to `glm_src.*`, the `sys.path` bootstrap points at this folder,
+`gpm_src` is the standalone pretraining stack, bundled so that pretraining
+works without touching the repository's existing `src/` package (used by
+fine-tuning/inference). Imports are rooted at `gpm_src.*`, the `sys.path`
+bootstrap points at this folder,
 and the per-rank Triton cache path falls back to a local directory when the
 lab-cluster path does not exist (override with `TRITON_CACHE_BASE`).
 
@@ -88,7 +89,7 @@ Alternatives kept for reference:
 
 Note on `use_dataug`: the pretraining objective is causal next-token
 prediction with a methylation-ratio-weighted two-stream cross-entropy (see
-`glm_src/model/scdnam_glm.py`, `scDNAmGLMLMHeadModelwithLoss.forward`). The
+`gpm_src/model/scdnam_gpm.py`, `scDNAmGPMLMHeadModelwithLoss.forward`). The
 MLM-style masking augmentation ([MASK] replacement + ratio noise) is only
 applied when `use_dataug` is `true`.
 

@@ -366,11 +366,11 @@ Directory structure example:
 
 ### 6. Pretraining from Scratch
 
-The pretraining code lives in [`pretraining/`](pretraining/README.md) as a **standalone, self-contained stack** (`pretraining/glm_src/`) — it neither imports nor modifies anything under `src/`, so it cannot interfere with the fine-tuning / inference pipeline.
+The pretraining code lives in [`pretraining/`](pretraining/README.md) as a **standalone, self-contained stack** (`pretraining/gpm_src/`) — it neither imports nor modifies anything under `src/`, so it cannot interfere with the fine-tuning / inference pipeline.
 
 #### What it does
 
-Pretrains the Mamba backbone as a methylation language model on scWGBS data: causal next-token prediction over the dual methylated/unmethylated token streams, weighted by per-CpG methylation ratios (see `scDNAmGLMLMHeadModelwithLoss` in `pretraining/glm_src/model/scdnam_glm.py`).
+Pretrains the Mamba backbone as a methylation language model on scWGBS data: causal next-token prediction over the dual methylated/unmethylated token streams, weighted by per-CpG methylation ratios (see `scDNAmGPMLMHeadModelwithLoss` in `pretraining/gpm_src/model/scdnam_gpm.py`).
 
 #### Data
 

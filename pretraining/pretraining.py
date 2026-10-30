@@ -1,5 +1,5 @@
 import os, sys
-# Standalone layout: the pretraining stack (glm_src) lives next to this
+# Standalone layout: the pretraining stack (gpm_src) lives next to this
 # file, so make this directory importable instead of the repository root.
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
@@ -12,9 +12,9 @@ import random
 import numpy as np
 from transformers import TrainingArguments, AutoTokenizer
 from transformers import Trainer as Trainer
-from glm_src.model.scdnam_glm import scDNAmGLMLMHeadModelwithLoss
-from glm_src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios
-from glm_src.mambaconfig import MambaConfig
+from gpm_src.model.scdnam_gpm import scDNAmGPMLMHeadModelwithLoss
+from gpm_src.dataset.scdnam_dataset import TokensRatiosDataset, scDNAm_collate_TokensRatios
+from gpm_src.mambaconfig import MambaConfig
 import torch.distributed as dist
 import uuid
 import logging
@@ -218,7 +218,7 @@ def main():
     
     # Initialize model
     model_config = MambaConfig(**model_config_dict["model_config"])
-    model = scDNAmGLMLMHeadModelwithLoss(
+    model = scDNAmGPMLMHeadModelwithLoss(
         config=model_config,
         tokenizer=tokenizer,
         initializer_cfg=model_config.initializer_cfg,

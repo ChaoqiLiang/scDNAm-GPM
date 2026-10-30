@@ -1,11 +1,11 @@
-from glm_src.model.scdnam_mixer_seq_simple import MambaLMHeadModel
-# from glm_src.model.scdnam_mixer_seq_simple_moe import MoEMambaLMHeadModel
+from gpm_src.model.scdnam_mixer_seq_simple import MambaLMHeadModel
+# from gpm_src.model.scdnam_mixer_seq_simple_moe import MoEMambaLMHeadModel
 from transformers.modeling_outputs import CausalLMOutput
 from typing import Optional
 import sys, torch
 from torch import nn
 import numpy as np
-from glm_src.mambaconfig import MambaConfig
+from gpm_src.mambaconfig import MambaConfig
 from mamba_ssm.utils.hf import load_config_hf, load_state_dict_hf
 from transformers.modeling_outputs import SequenceClassifierOutputWithPast
 import types
@@ -299,7 +299,7 @@ def random_noise(methy_ratios, scale=0.05):
     # add noise and clip to [0, 1]
     return torch.clamp(methy_ratios + noise, min=0.0, max=1.0)
 
-class scDNAmGLMLMHeadModelwithLoss(MambaLMHeadModel):
+class scDNAmGPMLMHeadModelwithLoss(MambaLMHeadModel):
     """
     A Language Model Head with additional support for loss calculations related to methylation.
 
@@ -309,7 +309,7 @@ class scDNAmGLMLMHeadModelwithLoss(MambaLMHeadModel):
         end_token_id: Token ID for the end token (e.g., [SEP]).
     """
     def __init__(self, config, tokenizer, initializer_cfg=None, device=None, dtype=None, use_dataug=False):
-        super(scDNAmGLMLMHeadModelwithLoss, self).__init__(config, initializer_cfg, device, dtype)
+        super(scDNAmGPMLMHeadModelwithLoss, self).__init__(config, initializer_cfg, device, dtype)
 
         self.pad_token_id = tokenizer._convert_token_to_id("[PAD]")
         self.start_token_id = tokenizer._convert_token_to_id("[BOS]")
@@ -450,7 +450,7 @@ def masked_mean(hidden_states, attention_mask):
     return mean_hidden  # output shape [batch_size, hidden_dim]
 
 
-class scDNAmGLMForSequenceClassification(scDNAmGLMLMHeadModelwithLoss):
+class scDNAmGPMForSequenceClassification(scDNAmGPMLMHeadModelwithLoss):
     """
     A class for sequence classification based on methylation data.
 
@@ -844,7 +844,7 @@ class scDNAmGLMForSequenceClassification(scDNAmGLMLMHeadModelwithLoss):
             }
 
 
-# class scDNAmGLMForSequenceClassification(scDNAmGLMLMHeadModelwithLoss):
+# class scDNAmGPMForSequenceClassification(scDNAmGPMLMHeadModelwithLoss):
 #     """
 #     A class for sequence classification based on methylation data.
 
@@ -1086,9 +1086,9 @@ class scDNAmGLMForSequenceClassification(scDNAmGLMLMHeadModelwithLoss):
 #         }
 
 
-class scDNAmGLMForTumorDeconv(scDNAmGLMForSequenceClassification):
+class scDNAmGPMForTumorDeconv(scDNAmGPMForSequenceClassification):
     """
-    scDNAm-GLM variant that replaces the classifier-plus-sigmoid with a diffusion head
+    scDNAm-GPM variant that replaces the classifier-plus-sigmoid with a diffusion head
     for tumor-fraction deconvolution.
     """
 
@@ -1257,10 +1257,10 @@ class scDNAmGLMForTumorDeconv(scDNAmGLMForSequenceClassification):
             "methy_ratios": methy_ratios
         }
 
-class scDNAmGLMForPredictscRNAseq(scDNAmGLMForSequenceClassification):
+class scDNAmGPMForPredictscRNAseq(scDNAmGPMForSequenceClassification):
 
     """
-    scDNAm-GLM variant that replaces the classifier-plus-sigmoid with a diffusion head
+    scDNAm-GPM variant that replaces the classifier-plus-sigmoid with a diffusion head
     for tumor-fraction deconvolution.
     """
 
@@ -1448,10 +1448,10 @@ class scDNAmGLMForPredictscRNAseq(scDNAmGLMForSequenceClassification):
         }
 
 
-class scDNAmGLMForLungTumor(scDNAmGLMForSequenceClassification):
+class scDNAmGPMForLungTumor(scDNAmGPMForSequenceClassification):
 
     """
-    scDNAm-GLM variant that replaces the classifier-plus-sigmoid with a diffusion head
+    scDNAm-GPM variant that replaces the classifier-plus-sigmoid with a diffusion head
     for tumor-fraction deconvolution.
     """
 
@@ -1640,10 +1640,10 @@ class scDNAmGLMForLungTumor(scDNAmGLMForSequenceClassification):
         }
 
 
-class scDNAmGLMForPerturbationscRNAseq(scDNAmGLMForSequenceClassification):
+class scDNAmGPMForPerturbationscRNAseq(scDNAmGPMForSequenceClassification):
 
     """
-    scDNAm-GLM variant that replaces the classifier-plus-sigmoid with a diffusion head
+    scDNAm-GPM variant that replaces the classifier-plus-sigmoid with a diffusion head
     for tumor-fraction deconvolution.
     """
 
@@ -1908,10 +1908,10 @@ def sample_random_indices(labels: torch.Tensor, k: int):
 
 
 
-class scDNAmGLMForPredictAllscRNAseq(scDNAmGLMForSequenceClassification):
+class scDNAmGPMForPredictAllscRNAseq(scDNAmGPMForSequenceClassification):
 
     """
-    scDNAm-GLM variant that replaces the classifier-plus-sigmoid with a diffusion head
+    scDNAm-GPM variant that replaces the classifier-plus-sigmoid with a diffusion head
     for tumor-fraction deconvolution.
     """
 
@@ -2124,7 +2124,7 @@ class scDNAmGLMForPredictAllscRNAseq(scDNAmGLMForSequenceClassification):
         }
 
 
-class scDNAmGLMForSequenceClassificationWithBatchCorrection(scDNAmGLMForSequenceClassification):
+class scDNAmGPMForSequenceClassificationWithBatchCorrection(scDNAmGPMForSequenceClassification):
     """
     A class for sequence classification based on methylation data.
 
