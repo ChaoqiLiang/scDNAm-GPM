@@ -44,7 +44,8 @@ file_name,dimension,error
 ```
 
 The tokenized pretraining data is being released on Google Drive in **3
-parts** — **Parts 1 and 2 are available now**, Part 3 still uploading:
+parts** — **Parts 1 and 2 are available now**; Part 3 is 92.4% uploaded
+(2.837 TiB / 3.07 TiB), remainder expected by **November 3, 2026**:
 - [Pretraining Data Part 1 – Google Drive](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)
 - [Pretraining Data Part 2 – Google Drive](https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing)
 
@@ -56,10 +57,11 @@ paths, or set `root_path` to a common prefix and keep file names relative.
 
 ```bash
 # from the repository root (fp16, manuscript default configs)
+# GPU count is auto-detected; override with e.g.  NPROC_PER_NODE=4 bash pretraining/script/pretraining.sh
 bash pretraining/script/pretraining.sh
 
-# or directly
-torchrun --nnodes=1 --nproc_per_node=8 --master_port=16866 \
+# or directly (replace <NUM_GPUS> with the number of GPUs on your node)
+torchrun --nnodes=1 --nproc_per_node=<NUM_GPUS> --master_port=16866 \
   pretraining/pretraining.py \
     --model_config_path pretraining/config/model/6mer_8mambalayers_model_config.json \
     --training_args_path pretraining/config/pretraining/training_args_fp16.json

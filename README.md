@@ -51,7 +51,7 @@
 </p>
 
 <p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  ✅ <strong>UPDATE:</strong> <strong>Part 2</strong> of the pretraining data has finished uploading — <strong>Parts 1–2 are now available</strong>, Part 3 is still transferring. 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Part 1]</strong></a> · <a href="https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing" style="color: #ffd700;"><strong>[Part 2]</strong></a> [2026/11/02]
+  ✅ <strong>UPDATE:</strong> <strong>Parts 1–2 of the pretraining data are available</strong>; <strong>Part 3 is 92.4% uploaded</strong> (2.837 TiB / 3.07 TiB) — the remainder is expected by tomorrow (<strong>Nov 3, 2026</strong>). 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Part 1]</strong></a> · <a href="https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing" style="color: #ffd700;"><strong>[Part 2]</strong></a> [2026/11/02]
 </p>
 
 ---
@@ -385,7 +385,7 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Parts 1 and 2 are available now**, and Part 3 is still uploading:
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Parts 1 and 2 are available now**; **Part 3 is 92.4% uploaded** (2.837 TiB / 3.07 TiB), with the remainder expected by **November 3, 2026**:
 
 📥 **[Download Part 1 (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
 📥 **[Download Part 2 (Google Drive)](https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing)**
@@ -396,10 +396,11 @@ Regenerate the CSV manifest with your own local paths (format below), or set `ro
 
 ```bash
 # from the repository root — manuscript default configs (6-mer, 8 Mamba layers, fp16)
+# GPU count is auto-detected; override with e.g.  NPROC_PER_NODE=4 bash pretraining/script/pretraining.sh
 bash pretraining/script/pretraining.sh
 
-# or launch directly
-torchrun --nnodes=1 --nproc_per_node=8 --master_port=16866 \
+# or launch directly (replace <NUM_GPUS> with the number of GPUs on your node)
+torchrun --nnodes=1 --nproc_per_node=<NUM_GPUS> --master_port=16866 \
   pretraining/pretraining.py \
     --model_config_path pretraining/config/model/6mer_8mambalayers_model_config.json \
     --training_args_path pretraining/config/pretraining/training_args_fp16.json
