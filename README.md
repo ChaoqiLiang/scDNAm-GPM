@@ -50,6 +50,10 @@
   ✅ <strong>UPDATE:</strong> The <strong>pretraining data</strong> (3 parts) is being uploaded to <strong>Google Drive</strong> — <strong>Part 1 is available now</strong>, Parts 2–3 are still transferring (complete by <strong>October 31, 2026</strong>). 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Pretraining Data – Google Drive]</strong></a> [2026/10/29]
 </p>
 
+<p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
+  ✅ <strong>UPDATE:</strong> <strong>Part 2</strong> of the pretraining data has finished uploading — <strong>Parts 1–2 are now available</strong>, Part 3 is still transferring. 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Part 1]</strong></a> · <a href="https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing" style="color: #ffd700;"><strong>[Part 2]</strong></a> [2026/11/02]
+</p>
+
 ---
 
 ## 🔥 Key Features
@@ -381,9 +385,10 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Part 1 is available now**, and Parts 2–3 are still uploading (everything complete by **October 31, 2026**):
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Parts 1 and 2 are available now**, and Part 3 is still uploading:
 
-📥 **[Download the pretraining data (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
+📥 **[Download Part 1 (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
+📥 **[Download Part 2 (Google Drive)](https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing)**
 
 Regenerate the CSV manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
 
