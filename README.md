@@ -39,19 +39,7 @@
 🧬 **Analyzing Single-Cell Methylation Data** | 🌐 **Whole-Genome-Scale Context Modeling** | 🔬 **Single-CpG Resolution** | ⚡ **Mamba-Powered Speed**
 
 <p align="center" style="background-color: #000000; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  🚧 We are currently uploading the <strong>pretraining code, pretraining data and docker</strong>. Please stay tuned! [2026/10/27]
-</p>
-
-<p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  ✅ <strong>UPDATE:</strong> The <strong>pretraining code</strong>, <strong>Docker image</strong> (<code>ghcr.io/chaoqiliang/scdnam-gpm</code>), <strong>Apptainer definition</strong> and <strong>explanatory markdown cells for the tutorials</strong> have been uploaded. The <strong>pretraining data</strong> is still being transferred. [2026/10/28]
-</p>
-
-<p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  ✅ <strong>UPDATE:</strong> The <strong>pretraining data</strong> (3 parts) is being uploaded to <strong>Google Drive</strong> — <strong>Part 1 is available now</strong>, Parts 2–3 are still transferring. 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Pretraining Data – Google Drive]</strong></a> [2026/10/29]
-</p>
-
-<p align="center" style="background-color: #1a3c1a; color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 1rem; margin: 1.25rem 0;">
-  ✅ <strong>UPDATE:</strong> <strong>Parts 1–2 of the pretraining data are available</strong>; <strong>Part 3 is 92.4% uploaded</strong> (2.837 TiB / 3.07 TiB) — the remainder is expected by tomorrow (<strong>Nov 3, 2026</strong>). 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Part 1]</strong></a> · <a href="https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing" style="color: #ffd700;"><strong>[Part 2]</strong></a> [2026/11/02]
+  ✅ <strong>RELEASE:</strong> The <strong>pretraining code</strong> and the full <strong>pretraining data</strong> (all 3 parts) are now available. 📥 <a href="https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link" style="color: #ffd700;"><strong>[Part 1]</strong></a> · <a href="https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing" style="color: #ffd700;"><strong>[Part 2]</strong></a> · <a href="https://drive.google.com/drive/folders/1Y21IzcCx5ozcxoLWKtcoDZTIZ1iJQAod?usp=sharing" style="color: #ffd700;"><strong>[Part 3]</strong></a> [2026/11/04]
 </p>
 
 ---
@@ -385,10 +373,11 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is being released on Google Drive in **3 parts** — **Parts 1 and 2 are available now**; **Part 3 is 92.4% uploaded** (2.837 TiB / 3.07 TiB), with the remainder expected by **November 3, 2026**:
+The manuscript pretraining set is `HumanbodyandMouseBrain_with_nucleotide_change_10mer_tokens_npz_repeat_one.csv` (~950k cells, human body + mouse brain). The tokenized pretraining data is released on Google Drive in **3 parts** — **all 3 parts are now available**:
 
 📥 **[Download Part 1 (Google Drive)](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)**
 📥 **[Download Part 2 (Google Drive)](https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing)**
+📥 **[Download Part 3 (Google Drive)](https://drive.google.com/drive/folders/1Y21IzcCx5ozcxoLWKtcoDZTIZ1iJQAod?usp=sharing)**
 
 Regenerate the CSV manifest with your own local paths (format below), or set `root_path` in the training args to a common prefix and keep the manifest file names relative.
 

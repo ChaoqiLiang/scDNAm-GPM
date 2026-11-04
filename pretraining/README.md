@@ -43,11 +43,11 @@ file_name,dimension,error
 /abs/or/rel/path/to/cell.allc.npz,2165450,
 ```
 
-The tokenized pretraining data is being released on Google Drive in **3
-parts** — **Parts 1 and 2 are available now**; Part 3 is 92.4% uploaded
-(2.837 TiB / 3.07 TiB), remainder expected by **November 3, 2026**:
+The tokenized pretraining data is released on Google Drive in **3 parts** —
+**all 3 parts are now available**:
 - [Pretraining Data Part 1 – Google Drive](https://drive.google.com/drive/folders/1a5ZpGWxdycweuEnu3hr8OLCkZLpDtpRa?usp=drive_link)
 - [Pretraining Data Part 2 – Google Drive](https://drive.google.com/drive/folders/1_RDi5cKFz5Wn23nDJLIK9qkcb7M6JBgb?usp=sharing)
+- [Pretraining Data Part 3 – Google Drive](https://drive.google.com/drive/folders/1Y21IzcCx5ozcxoLWKtcoDZTIZ1iJQAod?usp=sharing)
 
 `file_name` entries are joined with `root_path` (empty in the default config,
 so the manifest carries absolute paths). Regenerate the manifest with your own
