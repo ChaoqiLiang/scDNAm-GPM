@@ -8,7 +8,7 @@
   "use_dataug": false,
   "training_args": {
       "ddp_backend": "nccl",
-      "max_steps": 600000,
+      "max_steps": 60000,
       "overwrite_output_dir": true,
       "per_device_train_batch_size": 1,
       "gradient_accumulation_steps": 8,
@@ -19,7 +19,7 @@
       "dataloader_num_workers": 8,
       "report_to": "tensorboard",
       "ddp_find_unused_parameters": false,
-      "learning_rate": 0.0001,
+      "learning_rate": 0.0004,
       "lr_scheduler_type": "linear",
       "warmup_steps": 1000,
       "dataloader_persistent_workers": true,
