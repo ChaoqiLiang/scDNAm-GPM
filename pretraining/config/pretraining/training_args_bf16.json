@@ -13,7 +13,7 @@
   "use_dataug": false,
   "training_args": {
     "ddp_backend": "nccl",
-    "max_steps": 500000,
+    "max_steps": 60000,
     "overwrite_output_dir": true,
     "per_device_train_batch_size": 1,
     "gradient_accumulation_steps": 8,
