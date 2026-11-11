@@ -400,7 +400,7 @@ The launcher auto-detects the GPU count; `NPROC_PER_NODE`, `MODEL_CONFIG`, `TRAI
 #### Key configuration:
 
 - **`pretraining/config/model/6mer_8mambalayers_model_config.json`** — manuscript model: 6-mer tokenizer, 8 Mamba layers, d_model 128, d_state 16
-- **`pretraining/config/pretraining/training_args_fp16.json`** — fp16, DeepSpeed, 600k steps, lr 1e-4, batch size 1/GPU with gradient accumulation 8
+- **`pretraining/config/pretraining/training_args_fp16.json`** — fp16, DeepSpeed, 60k steps, lr 4e-4, batch size 1/GPU with gradient accumulation 4 and 8 H200 GPU
 - **`pretraining/config/pretraining/deepspeed_config_fp16.json`** — ZeRO stage 0 (DDP-style)
 - A bf16 training variant is kept for reference (see [`pretraining/README.md`](pretraining/README.md))
 
